@@ -1,0 +1,163 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+demo_databases/*.sqlite
+databases/*.db
+databases/*.sqlite
+
+# Docker
+*.log
+logs/
+*.pid
+
+# Docker volumes (persistent data)
+*_data/
+postgres_data/
+mysql_data/
+mongo_data/
+
+# Exports and Generated Files
+exports/
+*.xlsx
+*.csv
+*.json
+!database/*.json
+!**/package.json
+
+# Test Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Logs
+*.log
+setup.log
+*.log.*
+
+# Temporary Files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS Files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Backup Files
+*.bak
+*.backup
+*~
+
+# Cache directories
+.cache/
+*.cache
+
+# Python compiled files in delete folder
+delete/__pycache__/
+delete/*.pyc
+
+# Root schemas cache
+root_schemas/__pycache__/
+root_schemas/validators/__pycache__/
+
+# Migration files (optional - comment out if you want to track migrations)
+# migrations/
+
+# Credentials and Secrets
+credentials.json
+secrets.json
+*.pem
+*.key
+!database/sample_data.sql
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Docker Compose overrides
+docker-compose.override.yml
+
+# Node modules (if any frontend)
+node_modules/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Local configuration
+config.local.json
+settings.local.json
+
+# Windows reserved filenames
+nul
+CON
+PRN
+AUX
+NUL

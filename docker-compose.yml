@@ -1,0 +1,219 @@
+version: '3.8'
+
+services:
+  # TechCorp - SQLite (file-based, no container needed)
+  
+  # HealthPlus - MySQL
+  healthplus-mysql:
+    image: mysql:8.0
+    container_name: healthplus_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: healthplus_root_2024
+      MYSQL_DATABASE: healthplus_db
+      MYSQL_USER: healthplus_user
+      MYSQL_PASSWORD: healthplus_pass_2024
+    ports:
+      - "3307:3306"
+    volumes:
+      - healthplus_mysql_data:/var/lib/mysql
+      - ./database/healthplus/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - nlp2sql_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # FinanceHub - PostgreSQL
+  financehub-postgres:
+    image: postgres:15
+    container_name: financehub_postgres
+    environment:
+      POSTGRES_DB: financehub_db
+      POSTGRES_USER: financehub_user
+      POSTGRES_PASSWORD: financehub_pass_2024
+    ports:
+      - "5433:5432"
+    volumes:
+      - financehub_postgres_data:/var/lib/postgresql/data
+      - ./database/financehub/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - nlp2sql_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U financehub_user -d financehub_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RetailMax - MongoDB
+  retailmax-mongo:
+    image: mongo:7.0
+    container_name: retailmax_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: retailmax_admin
+      MONGO_INITDB_ROOT_PASSWORD: retailmax_pass_2024
+      MONGO_INITDB_DATABASE: retailmax_db
+    ports:
+      - "27018:27017"
+    volumes:
+      - retailmax_mongo_data:/data/db
+      - ./database/retailmax/init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - nlp2sql_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # EduLearn - MySQL (different instance)
+  edulearn-mysql:
+    image: mysql:8.0
+    container_name: edulearn_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: edulearn_root_2024
+      MYSQL_DATABASE: edulearn_db
+      MYSQL_USER: edulearn_user
+      MYSQL_PASSWORD: edulearn_pass_2024
+    ports:
+      - "3308:3306"
+    volumes:
+      - edulearn_mysql_data:/var/lib/mysql
+      - ./database/edulearn/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - nlp2sql_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Main NLP2SQL Application
+  nlp2sql-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nlp2sql_app
+    ports:
+      - "8001:8001"
+      - "8501:8501"  # Streamlit
+    environment:
+      # Metadata DB (SQLite fallback)
+      MYSQL_HOST: healthplus-mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: healthplus_root_2024
+      MYSQL_DATABASE: nlp2sql_metadata
+      
+      # Organization-specific DB configs
+      HEALTHPLUS_DB_HOST: healthplus-mysql
+      HEALTHPLUS_DB_PORT: 3306
+      HEALTHPLUS_DB_USER: healthplus_user
+      HEALTHPLUS_DB_PASSWORD: healthplus_pass_2024
+      
+      FINANCEHUB_DB_HOST: financehub-postgres
+      FINANCEHUB_DB_PORT: 5432
+      FINANCEHUB_DB_USER: financehub_user
+      FINANCEHUB_DB_PASSWORD: financehub_pass_2024
+      
+      RETAILMAX_DB_HOST: retailmax-mongo
+      RETAILMAX_DB_PORT: 27017
+      RETAILMAX_DB_USER: retailmax_admin
+      RETAILMAX_DB_PASSWORD: retailmax_pass_2024
+      
+      EDULEARN_DB_HOST: edulearn-mysql
+      EDULEARN_DB_PORT: 3306
+      EDULEARN_DB_USER: edulearn_user
+      EDULEARN_DB_PASSWORD: edulearn_pass_2024
+      
+      # AI/NLP Configuration
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      - ./databases:/app/databases  # For SQLite databases
+      - ./logs:/app/logs
+    depends_on:
+      healthplus-mysql:
+        condition: service_healthy
+      financehub-postgres:
+        condition: service_healthy
+      retailmax-mongo:
+        condition: service_healthy
+      edulearn-mysql:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - nlp2sql_network
+    restart: unless-stopped
+
+  # Ollama for AI/NLP processing
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_nlp
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - nlp2sql_network
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+
+  # Database Admin Tools
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_healthplus
+    environment:
+      PMA_HOST: healthplus-mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: healthplus_root_2024
+    ports:
+      - "8080:80"
+    depends_on:
+      - healthplus-mysql
+    networks:
+      - nlp2sql_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_financehub
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@financehub.net
+      PGADMIN_DEFAULT_PASSWORD: financehub_admin_2024
+    ports:
+      - "8081:80"
+    depends_on:
+      - financehub-postgres
+    networks:
+      - nlp2sql_network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express_retailmax
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: retailmax_admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: retailmax_pass_2024
+      ME_CONFIG_MONGODB_URL: mongodb://retailmax_admin:retailmax_pass_2024@retailmax-mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: retailmax_admin
+      ME_CONFIG_BASICAUTH_PASSWORD: retailmax_pass_2024
+    ports:
+      - "8082:8081"
+    depends_on:
+      - retailmax-mongo
+    networks:
+      - nlp2sql_network
+
+networks:
+  nlp2sql_network:
+    driver: bridge
+
+volumes:
+  healthplus_mysql_data:
+  financehub_postgres_data:
+  retailmax_mongo_data:
+  edulearn_mysql_data:
+  ollama_data:
+  pgadmin_data:

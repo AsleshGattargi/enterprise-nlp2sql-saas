@@ -1,0 +1,81 @@
+{tf1nsi\deff0 {onttbl {0 Times New Roman;}}
+{\colortbl;ed0\green0lue0;ed31\green78lue121;}
+0s24
+{\cf2s32 Multi-Tenant NLP2SQL System - Project Documentation\par}
+\par
+{\cf2s28 Executive Summary\par}
+\par
+The Multi-Tenant NLP2SQL System is an advanced AI-powered database query platform that transforms natural language questions into SQL queries while providing complete multi-tenant isolation.\par
+\par
+{\cf2s28 Key Features\par}
+\par
+ullet Natural Language to SQL conversion\par
+ullet Multi-tenant architecture with complete data isolation\par
+ullet Support for SQLite, MySQL, PostgreSQL, and MongoDB\par
+ullet Human Digital Twins for personalized AI experience\par
+ullet Enterprise-grade security and authentication\par
+ullet Docker-based deployment\par
+\par
+{\cf2s28 Technology Stack\par}
+\par
+{ Backend:}\par
+ullet FastAPI 0.104.1 - Modern async web framework\par
+ullet SQLAlchemy 2.0.23 - Database ORM\par
+ullet JWT Authentication with bcrypt hashing\par
+ullet Multiple database drivers (MySQL, PostgreSQL, MongoDB)\par
+\par
+{ Frontend:}\par
+ullet Streamlit 1.28.1 - Interactive web interface\par
+ullet Plotly - Data visualization\par
+ullet Pandas - Data processing\par
+\par
+{ Infrastructure:}\par
+ullet Docker & Docker Compose\par
+ullet Multi-database containers\par
+ullet Web-based admin tools\par
+\par
+{\cf2s28 Architecture Overview\par}
+\par
+The system follows a multi-tier architecture:\par
+\par
+1. { Frontend Layer:} Streamlit web interface (Port 8501)\par
+2. { API Layer:} FastAPI backend with authentication (Port 8001)\par
+3. { Processing Layer:} NLP2SQL engine for query conversion\par
+4. { Data Layer:} Multi-tenant databases with complete isolation\par
+\par
+{\cf2s28 Database Architecture\par}
+\par
+Each organization uses a different database type:\par
+\par
+ullet { TechCorp:} SQLite (Technology company)\par
+ullet { HealthPlus:} MySQL (Healthcare organization)\par
+ullet { FinanceHub:} PostgreSQL (Financial services)\par
+ullet { RetailMax:} MongoDB (E-commerce platform)\par
+ullet { EduLearn:} MySQL (Educational institution)\par
+\par
+{\cf2s28 Security Features\par}
+\par
+ullet Complete tenant data isolation\par
+ullet SQL injection prevention\par
+ullet Role-based access control\par
+ullet JWT token authentication\par
+ullet Audit logging and query history\par
+\par
+{\cf2s28 Installation and Deployment\par}
+\par
+{ Quick Start:}\par
+1. Clone repository\par
+2. Install Python dependencies: pip install -r requirements.txt\par
+3. Start system: python start_multi_db_system.py docker\par
+4. Access web interface: http://localhost:8501\par
+\par
+{\cf2s28 File Structure\par}
+\par
+ullet { src/:} Core application code\par
+ullet { database/:} Database schemas and initialization\par
+ullet { streamlit_app.py:} Web interface\par
+ullet { docker-compose.yml:} Container orchestration\par
+ullet { requirements.txt:} Python dependencies\par
+\par
+For complete documentation, see Multi-Tenant_NLP2SQL_Project_Documentation.md\par
+}
